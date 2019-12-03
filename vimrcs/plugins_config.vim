@@ -30,6 +30,12 @@ map <leader>o :BufExplorer<cr>
 let MRU_Max_Entries = 400
 map <leader>f :MRU<CR>
 
+""""""""""""""""""""""""""""""
+" => Doxygen plugin
+""""""""""""""""""""""""""""""
+let g:DoxygenToolkit_compactOneLineDoc = "yes"
+let g:DoxygenToolkit_compactDoc = "yes"
+let g:DoxygenToolkit_authorName = "Huaqi Fang"
 
 """"""""""""""""""""""""""""""
 " => YankStack
