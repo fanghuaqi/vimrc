@@ -79,6 +79,25 @@ snor <c-j> <esc>i<right><c-r>=snipMate#TriggerSnippet()<cr>
 let Grep_Skip_Dirs = 'RCS CVS SCCS .svn generated'
 set grepprg=/bin/grep\ -nH
 
+""""""""""""""""""""""""""""""
+" => Clang-Format
+""""""""""""""""""""""""""""""
+let g:clang_format#code_style = "llvm"
+let g:clang_format#style_options = {
+            \ "BasedOnStyle": "LLVM",
+            \ "IndentWidth" : 4,
+            \ "UseTab": "Never",
+            \ "BreakBeforeBraces": "Linux",
+            \ "AllowShortIfStatementsOnASingleLine": "false",
+            \ "IndentCaseLabels": "true",
+            \ "ReflowComments": "true",
+            \ "SpacesBeforeTrailingComments": 1 }
+
+let g:clang_format#detect_style_file = 1
+" map to <Leader>cf in C++ code
+autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
+autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
+nmap <Leader>C :ClangFormatAutoToggle<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Nerd Tree
