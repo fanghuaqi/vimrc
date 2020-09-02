@@ -16,7 +16,7 @@ elseif has("win16") || has("win32")
 elseif has("gui_gtk2")
     set gfn=DejaVu\ Sans\ Mono\ 11,Hack\ 14,Source\ Code\ Pro\ 12,Bitstream\ Vera\ Sans\ Mono\ 11
 elseif has("linux")
-    set gfn=IBM\ Plex\ Mono:h14,:Hack\ 14,Source\ Code\ Pro\ 12,Bitstream\ Vera\ Sans\ Mono\ 11
+    set gfn=DejaVu\ Sans\ Mono\ 11,Hack\ 14,Source\ Code\ Pro\ 12,Bitstream\ Vera\ Sans\ Mono\ 11
 elseif has("unix")
     set gfn=Monospace\ 11
 endif
