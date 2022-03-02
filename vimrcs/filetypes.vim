@@ -7,7 +7,7 @@ au FileType python syn keyword pythonDecorator True None False self
 au BufNewFile,BufRead *.jinja set syntax=htmljinja
 au BufNewFile,BufRead *.mako set ft=mako
 
-au FileType python map <buffer> F :set foldmethod=indent<cr>
+au FileType python map <buffer> F :set foldmethod=manual<cr>
 
 au FileType python inoremap <buffer> $r return 
 au FileType python inoremap <buffer> $i import 
@@ -36,7 +36,7 @@ au FileType javascript inoremap <buffer> $r return
 au FileType javascript inoremap <buffer> $f // --- PH<esc>FP2xi
 
 function! JavaScriptFold() 
-    setl foldmethod=syntax
+    setl foldmethod=manual
     setl foldlevelstart=1
     syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
 
@@ -51,7 +51,7 @@ endfunction
 " => CoffeeScript section
 """""""""""""""""""""""""""""""
 function! CoffeeScriptFold()
-    setl foldmethod=indent
+    setl foldmethod=manual
     setl foldlevelstart=1
 endfunction
 au FileType coffee call CoffeeScriptFold()
