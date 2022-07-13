@@ -275,6 +275,7 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 " http://joshorourke.com/2012/06/15/vim-tip-how-to-display-whitespace-characters
 """"""""""""""""""""""""""""""
 set listchars=eol:$,nbsp:_,tab:>-,trail:~,extends:>,precedes:<
+set list
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
