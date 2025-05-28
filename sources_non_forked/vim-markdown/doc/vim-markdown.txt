@@ -55,7 +55,7 @@ Installation ~
 If you use Vundle [2], add the following lines to your '~/.vimrc':
 >
   Plugin 'godlygeek/tabular'
-  Plugin 'plasticboy/vim-markdown'
+  Plugin 'preservim/vim-markdown'
 <
 The 'tabular' plugin must come _before_ 'vim-markdown'.
 
@@ -67,11 +67,11 @@ Then run inside Vim:
 If you use Pathogen [3], do this:
 >
   cd ~/.vim/bundle
-  git clone https://github.com/plasticboy/vim-markdown.git
+  git clone https://github.com/preservim/vim-markdown.git
 <
 To install without Pathogen using the Debian vim-addon-manager [4], do this:
 >
-  git clone https://github.com/plasticboy/vim-markdown.git
+  git clone https://github.com/preservim/vim-markdown.git
   cd vim-markdown
   sudo make install
   vim-addon-manager install markdown
@@ -102,9 +102,13 @@ The following commands are useful to open and close folds:
                                                               *vim-markdown-zM*
 - 'zM': folds everything all the way
                                                               *vim-markdown-za*
-- 'za': open a fold your cursor is on
+- 'za': toggle a fold your cursor is on
                                                               *vim-markdown-zA*
-- 'zA': open a fold your cursor is on recursively
+- 'zA': toggle a fold your cursor is on recursively
+                                                              *vim-markdown-zo*
+- 'zo': open a fold your cursor is on
+                                                              *vim-markdown-zO*
+- 'zO': open a fold your cursor is on recursively
                                                               *vim-markdown-zc*
 - 'zc': close a fold your cursor is on
                                                               *vim-markdown-zC*
@@ -490,6 +494,30 @@ Change how to open new files ~
 >
   let g:vim_markdown_edit_url_in = 'tab'
 <
+-------------------------------------------------------------------------------
+                                    *vim-markdown-support-borderless-tables*
+Support borderless tables ~
+
+                                              *g:vim_markdown_borderless_table*
+- 'g:vim_markdown_borderless_table'
+
+  Add support for borderless tables, such as:
+>
+  header 1|header 2
+  --|--
+  data 1|data 2
+<
+  if set to 1:
+>
+  let g:vim_markdown_borderless_table = 1
+<
+  the table would be formatted as usual:
+>
+  | header 1 | header 2 |
+  |----------|----------|
+  | data 1   | data 2   |
+<
+
 ===============================================================================
                                                         *vim-markdown-mappings*
 Mappings ~
@@ -525,7 +553,7 @@ The following work on normal and visual modes:
 - ']]': go to next header. '<Plug>Markdown_MoveToNextHeader'
 
                                                               *vim-markdown-[[*
-- '[[': go to previous header. Contrast with ']c'.
+- '[[': go to previous header. Contrast with ']h'.
   '<Plug>Markdown_MoveToPreviousHeader'
 
                                                               *vim-markdown-][*
@@ -536,8 +564,8 @@ The following work on normal and visual modes:
 - '[]': go to previous sibling header if any.
   '<Plug>Markdown_MoveToPreviousSiblingHeader'
 
-                                                              *vim-markdown-]c*
-- ']c': go to Current header. '<Plug>Markdown_MoveToCurHeader'
+                                                              *vim-markdown-]h*
+- ']h': go to Current header. '<Plug>Markdown_MoveToCurHeader'
 
                                                               *vim-markdown-]u*
 - ']u': go to parent header (Up). '<Plug>Markdown_MoveToParentHeader'
@@ -651,7 +679,7 @@ References ~
 [2] https://github.com/gmarik/vundle
 [3] https://github.com/tpope/vim-pathogen
 [4] http://packages.qa.debian.org/v/vim-addon-manager.html
-[5] https://github.com/plasticboy/vim-markdown/archive/master.tar.gz
+[5] https://github.com/preservim/vim-markdown/archive/master.tar.gz
 [6] https://github.com/klen/python-mode
 [7] https://gohugo.io/content/front-matter/
 [8] https://github.com/cespare/vim-toml

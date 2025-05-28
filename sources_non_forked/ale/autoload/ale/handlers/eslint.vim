@@ -1,6 +1,12 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Functions for working with eslint, for checking or fixing files.
 
+let s:executables = [
+\   '.yarn/sdks/eslint/bin/eslint.js',
+\   'node_modules/.bin/eslint_d',
+\   'node_modules/eslint/bin/eslint.js',
+\   'node_modules/.bin/eslint',
+\]
 let s:sep = has('win32') ? '\' : '/'
 
 call ale#Set('javascript_eslint_options', '')
@@ -12,7 +18,11 @@ call ale#Set('javascript_eslint_suppress_missing_config', 0)
 function! ale#handlers#eslint#FindConfig(buffer) abort
     for l:path in ale#path#Upwards(expand('#' . a:buffer . ':p:h'))
         for l:basename in [
+        \   'eslint.config.js',
+        \   'eslint.config.mjs',
+        \   'eslint.config.cjs',
         \   '.eslintrc.js',
+        \   '.eslintrc.cjs',
         \   '.eslintrc.yaml',
         \   '.eslintrc.yml',
         \   '.eslintrc.json',
@@ -30,11 +40,12 @@ function! ale#handlers#eslint#FindConfig(buffer) abort
 endfunction
 
 function! ale#handlers#eslint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'javascript_eslint', [
-    \   'node_modules/.bin/eslint_d',
-    \   'node_modules/eslint/bin/eslint.js',
-    \   'node_modules/.bin/eslint',
-    \])
+    return ale#path#FindExecutable(a:buffer, 'javascript_eslint', s:executables)
+endfunction
+
+" Given a buffer, return an appropriate working directory for ESLint.
+function! ale#handlers#eslint#GetCwd(buffer) abort
+    return ale#path#Dirname(ale#handlers#eslint#FindConfig(a:buffer))
 endfunction
 
 function! ale#handlers#eslint#GetCommand(buffer) abort
@@ -84,11 +95,14 @@ function! s:CheckForBadConfig(buffer, lines) abort
 endfunction
 
 function! s:parseJSON(buffer, lines) abort
-    try
-        let l:parsed = json_decode(a:lines[-1])
-    catch
-        return []
-    endtry
+    let l:parsed = []
+
+    for l:line in a:lines
+        try
+            let l:parsed = extend(l:parsed, json_decode(l:line))
+        catch
+        endtry
+    endfor
 
     if type(l:parsed) != v:t_list || empty(l:parsed)
         return []

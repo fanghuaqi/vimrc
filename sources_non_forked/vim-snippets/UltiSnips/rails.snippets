@@ -69,7 +69,7 @@ endsnippet
 
 # FIXME: handling literal bracket pair inside of nested tab groups?
 snippet tcr "Create references column"
-t.references :${1:taggable}${2:, polymorphic ${3:{ :default: '${4:Photo}' \}}}
+t.references :${1:taggable}${2:, polymorphic: ${3:{ default: '${4:Photo}' }}}
 $0
 endsnippet
 
@@ -597,7 +597,7 @@ endsnippet
 
 snippet rest "respond_to"
 respond_to do |wants|
-	wants.${1:html}${2: { $0 \}}
+	wants.${1:html}${2: { $0 }}
 end
 endsnippet
 
@@ -655,7 +655,7 @@ t.$0
 endsnippet
 
 snippet t. "t.references (tcr)"
-t.references :${1:taggable}${2:, polymorphic ${3:{ :default: '${4:Photo}' \}}}
+t.references :${1:taggable}${2:, polymorphic: ${3:{ default: '${4:Photo}' }}}
 t.$0
 endsnippet
 
@@ -780,7 +780,7 @@ verify only: [:$1], session: :user, params: :id, redirect_to {:action: '${2:inde
 endsnippet
 
 snippet wants "wants_format"
-wants.${1:js|json|html}${2: { $0 \}}
+wants.${1:js|json|html}${2: { $0 }}
 endsnippet
 
 snippet xdelete "xhr delete"
@@ -797,28 +797,6 @@ endsnippet
 
 snippet xput "xhr put"
 xhr :put, :${1:update}, id: ${2:1}, ${3:object}: { $4 }$0
-endsnippet
-
-snippet sweeper "Create sweeper class"
-class ${1:Model}Sweeper < ActionController::Caching::Sweeper
-	observe ${1:Model}
-
-	def after_save(${1/./\l$0/})
-		expire_cache(${1/./\l$0/})
-	end
-
-	def after_destroy(${1/./\l$0/})
-		expire_cache(${1/./\l$0/})
-	end
-
-	private
-
-		def expire_cache(${1/./\l$0/})
-			${0:expire_page ${1/./\l$0/}s_path
-			expire_page ${1/./\l$0/}_path(${1/./\l$0/})}
-		end
-
-end
 endsnippet
 
 snippet col "collection routes"

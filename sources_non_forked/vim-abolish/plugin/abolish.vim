@@ -1,6 +1,6 @@
 " abolish.vim - Language friendly searches, substitutions, and abbreviations
 " Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      1.1
+" Version:      1.2
 " GetLatestVimScripts: 1545 1 :AutoInstall: abolish.vim
 
 " Initialization {{{1
@@ -23,8 +23,8 @@ endif
 " }}}1
 " Utility functions {{{1
 
-function! s:function(name)
-  return function(substitute(a:name,'^s:',matchstr(expand('<sfile>'), '<SNR>\d\+_'),''))
+function! s:function(name) abort
+  return function(substitute(a:name,'^s:',matchstr(expand('<sfile>'), '.*\zs<SNR>\d\+_'),''))
 endfunction
 
 function! s:send(self,func,...)
@@ -142,10 +142,6 @@ function! s:dotcase(word)
   return substitute(s:snakecase(a:word),'_','.','g')
 endfunction
 
-function! s:titlecase(word)
-  return substitute(s:spacecase(a:word), '\(\<\w\)','\=toupper(submatch(1))','g')
-endfunction
-
 call extend(Abolish, {
       \ 'camelcase':  s:function('s:camelcase'),
       \ 'mixedcase':  s:function('s:mixedcase'),
@@ -154,7 +150,6 @@ call extend(Abolish, {
       \ 'dashcase':   s:function('s:dashcase'),
       \ 'dotcase':    s:function('s:dotcase'),
       \ 'spacecase':  s:function('s:spacecase'),
-      \ 'titlecase':  s:function('s:titlecase')
       \ }, 'keep')
 
 function! s:create_dictionary(lhs,rhs,opts)
@@ -215,7 +210,6 @@ function! s:SubComplete(A,L,P)
 endfunction
 
 function! s:Complete(A,L,P)
-  let g:L = a:L
   " Vim bug: :Abolish -<Tab> calls this function with a:A equal to 0
   if a:A =~# '^[^/?-]' && type(a:A) != type(0)
     return join(s:words(),"\n")
@@ -285,7 +279,7 @@ function! s:parse_subvert(bang,line1,line2,count,args)
   else
     let args = a:args
   endif
-  let separator = matchstr(args,'^.')
+  let separator = '\v((\\)@<!(\\\\)*\\)@<!' . matchstr(args,'^.')
   let split = split(args,separator,1)[1:]
   if a:count || split == [""]
     return s:parse_substitute(a:bang,a:line1,a:line2,a:count,split)
@@ -314,7 +308,6 @@ function! s:normalize_options(flags)
     let opts = {}
     let flags = a:flags
   endif
-  let g:op1 = copy(opts)
   if flags =~# 'w'
     let opts.boundaries = 2
   elseif flags =~# 'v'
@@ -324,7 +317,6 @@ function! s:normalize_options(flags)
   endif
   let opts.case = (flags !~# 'I' ? get(opts,'case',1) : 0)
   let opts.flags = substitute(flags,'\C[avIiw]','','g')
-  let g:op2 = copy(opts)
   return opts
 endfunction
 
@@ -385,7 +377,7 @@ function! s:find_command(cmd,flags,word)
   " beginning of the line, and we can't use position flags (e.g., /foo/e).
   " If we use :norm /pattern, we leave ourselves vulnerable to "press enter"
   " prompts (even with :silent).
-  let cmd = (a:cmd =~ '[?!]' ? '?' : '/')
+  let cmd = (a:cmd =~ '[?!]$' ? '?' : '/')
   let @/ = s:pattern(dict,opts.boundaries)
   if opts.flags == "" || !search(@/,'n')
     return "norm! ".cmd."\<CR>"
@@ -402,6 +394,8 @@ function! s:grep_command(args,bang,flags,word)
   let dict = s:create_dictionary(a:word,"",opts)
   if &grepprg == "internal"
     let lhs = "'".s:pattern(dict,opts.boundaries)."'"
+  elseif &grepprg =~# '^rg\|^ag'
+    let lhs = "'".s:egrep_pattern(dict,opts.boundaries)."'"
   else
     let lhs = "-E '".s:egrep_pattern(dict,opts.boundaries)."'"
   endif
@@ -566,6 +560,7 @@ endfunction
 call extend(Abolish.Coercions, {
       \ 'c': Abolish.camelcase,
       \ 'm': Abolish.mixedcase,
+      \ 'p': Abolish.mixedcase,
       \ 's': Abolish.snakecase,
       \ '_': Abolish.snakecase,
       \ 'u': Abolish.uppercase,
@@ -574,7 +569,6 @@ call extend(Abolish.Coercions, {
       \ 'k': Abolish.dashcase,
       \ '.': Abolish.dotcase,
       \ ' ': Abolish.spacecase,
-      \ 't': Abolish.titlecase,
       \ "function missing": s:function("s:unknown_coercion")
       \}, "keep")
 
@@ -591,6 +585,7 @@ function! s:coerce(type) abort
     let regbody = getreg('"')
     let regtype = getregtype('"')
     let c = v:count1
+    let begin = getcurpos()
     while c > 0
       let c -= 1
       if a:type ==# 'line'
@@ -603,9 +598,6 @@ function! s:coerce(type) abort
       silent exe 'normal!' move.'y'
       let word = @@
       let @@ = s:send(g:Abolish.Coercions,s:transformation,word)
-      if !exists('begin')
-        let begin = getpos("'[")
-      endif
       if word !=# @@
         let changed = 1
         exe 'normal!' move.'p'
@@ -621,8 +613,8 @@ function! s:coerce(type) abort
 endfunction
 
 nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <plug>(abolish-coerce-word) <sid>coerce(nr2char(getchar())).'iw'
+vnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
+nnoremap <expr> <Plug>(abolish-coerce-word) <SID>coerce(nr2char(getchar())).'iw'
 
 " }}}1
 
